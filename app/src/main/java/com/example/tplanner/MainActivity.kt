@@ -22,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.tplanner.ui.ExportScreen
 import com.example.tplanner.ui.HomeScreen
 import com.example.tplanner.ui.ImportScreen
 import com.example.tplanner.ui.ProgressScreen
@@ -76,6 +77,9 @@ fun AppNavigation() {
             composable(Screen.Progress.route) { ProgressScreen() }
             composable(Screen.Import.route) { 
                 ImportScreen(onNavigateBack = { navController.popBackStack() })
+            }
+            composable(Screen.Export.route) { 
+                ExportScreen()
             }
             composable(
                 route = Screen.WorkoutSession.route,

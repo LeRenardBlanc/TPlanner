@@ -10,10 +10,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.Card
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -107,6 +110,22 @@ fun HomeScreen(
                     modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
                 )
                 PlaceholderCard(text = "Volume total: ${weekStats.totalVolume} kg")
+            }
+
+            // Section: Export
+            item {
+                Text(
+                    text = "Gestion des données",
+                    style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(top = 24.dp, bottom = 8.dp)
+                )
+                OutlinedButton(
+                    onClick = { navController.navigate(Screen.Export.route) },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Default.Upload, contentDescription = null)
+                    Text("Exporter les données", modifier = Modifier.padding(start = 8.dp))
+                }
             }
         }
     }

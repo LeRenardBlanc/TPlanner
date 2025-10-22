@@ -7,6 +7,7 @@ sealed class Screen(val route: String) {
     object Home : Screen("home")
     object Progress : Screen("progress")
     object Import : Screen("import")
+    object Export : Screen("export")
 
     object WorkoutSession : Screen("workout/{day}") {
         fun createRoute(day: String) = "workout/$day"
