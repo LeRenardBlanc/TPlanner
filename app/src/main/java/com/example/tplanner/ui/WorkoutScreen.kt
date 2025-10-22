@@ -25,6 +25,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.tplanner.ui.viewmodel.ExerciseState
@@ -32,14 +33,21 @@ import com.example.tplanner.ui.viewmodel.WorkoutViewModel
 
 @Composable
 fun WorkoutScreen(day: String, workoutViewModel: WorkoutViewModel = viewModel()) {
+    val context = LocalContext.current
     val uiState by workoutViewModel.uiState.collectAsState()
 
     LaunchedEffect(day) {
+        workoutViewModel.initRepository(context)
         workoutViewModel.loadSession(day)
     }
 
     if (uiState.isLoading) {
-        CircularProgressIndicator()
+        Column(
+            modifier = Modifier.fillMaxWidth().padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            CircularProgressIndicator()
+        }
     } else {
         LazyColumn(
             modifier = Modifier.padding(16.dp)
@@ -67,7 +75,7 @@ fun WorkoutScreen(day: String, workoutViewModel: WorkoutViewModel = viewModel())
 
         if (uiState.showSummaryDialog) {
             WorkoutSummaryDialog(
-                totalVolume = uiState.totalVolume,
+                volumeComparison = uiState.volumeComparison,
                 averageRpe = uiState.averageRpe,
                 onDismiss = { workoutViewModel.dismissSummaryDialog() }
             )
@@ -85,10 +93,20 @@ fun ExerciseCard(exerciseState: ExerciseState, viewModel: WorkoutViewModel) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = exerciseState.exercise.name, style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Objectif: ${exerciseState.exercise.sets} x ${exerciseState.exercise.reps}")
+            Text(text = "Objectif: ${exerciseState.exercise.sets} × ${exerciseState.exercise.reps}")
+            
+            // Display last performance if available
+            exerciseState.lastPerformance?.let { lastPerf ->
+                Text(
+                    text = lastPerf,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+            }
+            
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Input fields
+            // Input fields - Row 1: Weight and RPE
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -97,10 +115,10 @@ fun ExerciseCard(exerciseState: ExerciseState, viewModel: WorkoutViewModel) {
                 OutlinedTextField(
                     value = exerciseState.weight,
                     onValueChange = { viewModel.onWeightChange(exerciseState.exercise.name, it) },
-                    label = { Text("Poids") },
+                    label = { Text("Poids (kg)") },
                     modifier = Modifier.weight(1f)
                 )
-                Spacer(modifier = Modifier.width(16.dp))
+                Spacer(modifier = Modifier.width(8.dp))
                 OutlinedTextField(
                     value = exerciseState.rpe,
                     onValueChange = { viewModel.onRpeChange(exerciseState.exercise.name, it) },
@@ -108,6 +126,30 @@ fun ExerciseCard(exerciseState: ExerciseState, viewModel: WorkoutViewModel) {
                     modifier = Modifier.weight(1f)
                 )
             }
+            
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Input fields - Row 2: Reps and Rest Time
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = exerciseState.reps,
+                    onValueChange = { viewModel.onRepsChange(exerciseState.exercise.name, it) },
+                    label = { Text("Reps") },
+                    modifier = Modifier.weight(1f)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                OutlinedTextField(
+                    value = exerciseState.restTime,
+                    onValueChange = { viewModel.onRestTimeChange(exerciseState.exercise.name, it) },
+                    label = { Text("Repos (s)") },
+                    modifier = Modifier.weight(1f)
+                )
+            }
+
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
                 value = exerciseState.comment,
@@ -130,7 +172,8 @@ fun ExerciseCard(exerciseState: ExerciseState, viewModel: WorkoutViewModel) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Text("Séries validées:", style = MaterialTheme.typography.titleSmall)
                 exerciseState.validatedSets.forEachIndexed { index, set ->
-                    Text("Série ${index + 1}: ${set.weight} kg @ RPE ${set.rpe}")
+                    val restInfo = set.restTime?.let { " | Repos: ${it}s" } ?: ""
+                    Text("Série ${index + 1}: ${set.weight} kg × ${set.reps} @ RPE ${set.rpe}$restInfo")
                 }
             }
         }
@@ -138,7 +181,7 @@ fun ExerciseCard(exerciseState: ExerciseState, viewModel: WorkoutViewModel) {
 }
 
 @Composable
-fun WorkoutSummaryDialog(totalVolume: Double, averageRpe: Double, onDismiss: () -> Unit) {
+fun WorkoutSummaryDialog(volumeComparison: String, averageRpe: Double, onDismiss: () -> Unit) {
     AlertDialog(
         onDismissRequest = onDismiss,
         title = { Text(text = "Fin de la séance") },
@@ -146,7 +189,7 @@ fun WorkoutSummaryDialog(totalVolume: Double, averageRpe: Double, onDismiss: () 
             Column {
                 Text("Bon boulot, machine biologique inefficace.")
                 Spacer(modifier = Modifier.height(16.dp))
-                Text("Volume total: %.1f kg".format(totalVolume))
+                Text(volumeComparison)
                 Text("RPE moyen: %.1f".format(averageRpe))
             }
         },

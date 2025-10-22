@@ -23,6 +23,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.tplanner.ui.HomeScreen
+import com.example.tplanner.ui.ImportScreen
 import com.example.tplanner.ui.ProgressScreen
 import com.example.tplanner.ui.Screen
 import com.example.tplanner.ui.WorkoutScreen
@@ -73,6 +74,9 @@ fun AppNavigation() {
         NavHost(navController, startDestination = Screen.Home.route, modifier = Modifier.padding(innerPadding)) {
             composable(Screen.Home.route) { HomeScreen(navController) }
             composable(Screen.Progress.route) { ProgressScreen() }
+            composable(Screen.Import.route) { 
+                ImportScreen(onNavigateBack = { navController.popBackStack() })
+            }
             composable(
                 route = Screen.WorkoutSession.route,
                 arguments = listOf(navArgument("day") { type = NavType.StringType })
