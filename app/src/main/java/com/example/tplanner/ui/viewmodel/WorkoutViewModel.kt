@@ -263,6 +263,30 @@ class WorkoutViewModel : ViewModel() {
         _uiState.update { it.copy(showSummaryDialog = false) }
     }
 
+    fun addFreeExercise(name: String, category: String) {
+        val freeExercise = ProgramExercise(
+            day = _uiState.value.day,
+            name = name,
+            sets = 3,
+            reps = "8-10",
+            targetWeight = 0.0,
+            targetRpe = 8,
+            category = category,
+            orderIndex = _uiState.value.exercises.size
+        )
+
+        val newExerciseState = ExerciseState(
+            exercise = freeExercise,
+            weight = "0",
+            rpe = "8",
+            reps = "8-10"
+        )
+
+        _uiState.update {
+            it.copy(exercises = it.exercises + newExerciseState)
+        }
+    }
+
     private fun parseReps(repsString: String): Int {
         return repsString.split('-').mapNotNull { it.trim().toIntOrNull() }.average().toInt()
     }

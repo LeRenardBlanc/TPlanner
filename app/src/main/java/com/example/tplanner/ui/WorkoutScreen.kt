@@ -10,12 +10,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -23,6 +26,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -35,6 +41,7 @@ import com.example.tplanner.ui.viewmodel.WorkoutViewModel
 fun WorkoutScreen(day: String, workoutViewModel: WorkoutViewModel = viewModel()) {
     val context = LocalContext.current
     val uiState by workoutViewModel.uiState.collectAsState()
+    var showAddExerciseDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(day) {
         workoutViewModel.initRepository(context)
@@ -64,6 +71,15 @@ fun WorkoutScreen(day: String, workoutViewModel: WorkoutViewModel = viewModel())
             }
             item {
                 Spacer(modifier = Modifier.height(16.dp))
+                OutlinedButton(
+                    onClick = { showAddExerciseDialog = true },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("+ Ajouter un exercice libre")
+                }
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = { workoutViewModel.finishWorkout() },
                     modifier = Modifier.fillMaxWidth()
@@ -71,6 +87,16 @@ fun WorkoutScreen(day: String, workoutViewModel: WorkoutViewModel = viewModel())
                     Text(text = "Terminer la séance")
                 }
             }
+        }
+
+        if (showAddExerciseDialog) {
+            AddExerciseDialog(
+                onDismiss = { showAddExerciseDialog = false },
+                onConfirm = { name, category ->
+                    workoutViewModel.addFreeExercise(name, category)
+                    showAddExerciseDialog = false
+                }
+            )
         }
 
         if (uiState.showSummaryDialog) {
@@ -81,6 +107,50 @@ fun WorkoutScreen(day: String, workoutViewModel: WorkoutViewModel = viewModel())
             )
         }
     }
+}
+
+@Composable
+fun AddExerciseDialog(onDismiss: () -> Unit, onConfirm: (String, String) -> Unit) {
+    var exerciseName by remember { mutableStateOf("") }
+    var category by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Ajouter un exercice") },
+        text = {
+            Column {
+                OutlinedTextField(
+                    value = exerciseName,
+                    onValueChange = { exerciseName = it },
+                    label = { Text("Nom de l'exercice") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = category,
+                    onValueChange = { category = it },
+                    label = { Text("Catégorie (Dos, Pecs, etc.)") },
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(
+                onClick = { 
+                    if (exerciseName.isNotBlank() && category.isNotBlank()) {
+                        onConfirm(exerciseName, category)
+                    }
+                }
+            ) {
+                Text("Ajouter")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Annuler")
+            }
+        }
+    )
 }
 
 @Composable

@@ -102,6 +102,26 @@ Volume = Poids × Répétitions × Séries
 ### Détection de stagnation
 L'application détecte une stagnation si la progression moyenne sur 3 séances consécutives est inférieure à 3%.
 
+## Fonctionnalités avancées
+
+### Ajout d'exercices libres
+Pendant une séance, vous pouvez ajouter un exercice qui n'était pas prévu dans votre programme :
+- Appuyez sur "+ Ajouter un exercice libre"
+- Entrez le nom et la catégorie
+- L'exercice sera ajouté à votre séance en cours
+
+### Comparaison de périodes
+Dans l'écran de progression, vous pouvez :
+- Voir l'évolution de chaque exercice sur les dernières séances
+- Comparer le volume par groupe musculaire
+- Identifier vos records personnels automatiquement
+
+### Estimation du 1RM
+L'application calcule automatiquement votre 1RM estimé pour chaque exercice en utilisant la formule d'Epley :
+- Basée sur votre meilleur poids × reps
+- Mise à jour après chaque séance
+- Visible dans l'écran de progression
+
 ## Comment utiliser
 
 1. **Importer un programme**
