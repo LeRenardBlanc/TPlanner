@@ -12,6 +12,10 @@ junitVersion = "1.1.5"
 espressoCore = "3.5.1"
 appcompat = "1.7.0"
 material = "1.12.0"
+room = "2.6.1"
+ksp = "2.0.0-1.0.21"
+apacheCommonsCsv = "1.10.0"
+vico = "2.0.0-alpha.28"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -38,8 +42,22 @@ androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-te
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 
+# Room Database
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+# CSV Parsing
+apache-commons-csv = { group = "org.apache.commons", name = "commons-csv", version.ref = "apacheCommonsCsv" }
+
+# Charts
+vico-compose = { group = "com.patrykandpatrick.vico", name = "compose", version.ref = "vico" }
+vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
+vico-core = { group = "com.patrykandpatrick.vico", name = "core", version.ref = "vico" }
+
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 
